@@ -84,27 +84,32 @@ def DownloadImage (imagelink,downloadpath):
     downloadpath+='/';
   arr=imagelink.split('/');
   imagefilename=arr[len(arr)-1];
-  urllib2.Request(imagelink,None,header);
+  '''''''''
+  if (os.path.isfile(imagefilename)==True):
+    print "存在同名文件，继续覆盖请输入y，否则跳过:";
+    tempin=raw_input();
+    if (tempin!='y'):
+      return True;
+  '''''''''
+  req=urllib2.Request(imagelink,None,header);
   try:
-    image=urllib2.urlopen(imagelink);
+    image=urllib2.urlopen(req);
   except urllib2.URLError,err:
     HTTPError(err);
     return False;
-  try:
-    imagefile=open(downloadpath+imagefilename,'w');
-    imagefile.write(image.read());
-  except:
-    print "写入文件错误"
-    return False
+  imagefile=open(downloadpath+imagefilename,'wb');
+  imagefile.write(image.read());
   return True
 #抓取页面图片下载并返回下一页链接函数
 def DownloadPageImage (pagelink,filepath):
+  if (pagelink=="" or pagelink==None):
+    return None;
   req=urllib2.Request (pagelink,None,header);
   try:
     page=urllib2.urlopen(req);
   except urllib2.URLError,err:
     HTTPError(err);
-    return False;
+    return None;
   document=BeautifulSoup(page,"html.parser");
   imgtag=document.find('img',id='img');
   nexttag=document.find('a',id='next');
@@ -123,19 +128,20 @@ def DownloadAll (indexlink):
   document=BeautifulSoup(page,"html.parser");
   title=document.find('h1',id='gn').string;
   title=title.split('\n')[0];
-  title=re.sub(r'\\|\[|\]|\/|\?|\*|<|>|\||`|\|\~|"',"",title);
+  title=re.sub(r'\\|\[|\]|\/|\?|\*|<|>|\||`|\|\~|"|\.|:',"",title);
   if (indexlink[len(indexlink)-1]!='/'):
     indexlink+='/';
   indexlink+=' ';
-  print title;
+  #print title;
   if (len(title)>254):
     temp=indexlink.split('/');
     title=temp[len(temp)-2];
   if (not os.path.exists(defaultdownloadpath+title)):
     os.makedirs(defaultdownloadpath+title);
   else:
+    invalue="";
     print "目标文件夹已经存在，是否继续?(y/n)";
-    while (invalve!='y'):
+    while (invalue!='y'):
       invalue=raw_input();
       if (invalue=='n'):
         print "用户停止.";
