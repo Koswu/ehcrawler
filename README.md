@@ -1,6 +1,6 @@
 Exhentai-Crawler
 =================
-一个基于Python2.7的exhentai爬虫
+一个基于Python2.7的ex绅士爬虫
 
 安装好依赖库就可以直接运行exhentai.py
 
